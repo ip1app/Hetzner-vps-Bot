@@ -111,13 +111,14 @@ final class UpdateCheck
     /** @return array{version: string, url: string} */
     private static function fetchLatestFromGitHub(): array
     {
-        $url = 'https://api.github.com/repos/' . self::REPO . '/releases/latest';
-        $res = HttpClient::request('GET', $url, null, [
+        $headers = [
             'Accept: application/vnd.github+json',
             'User-Agent: Hetzner-vps-Bot/' . Installed::VERSION,
-        ]);
+        ];
+        $base = 'https://api.github.com/repos/' . self::REPO;
+        $res = HttpClient::request('GET', $base . '/releases/latest', null, $headers);
         if ($res['code'] === 404) {
-            throw new \RuntimeException('No GitHub releases published yet.');
+            return self::fetchLatestFromGitHubTags($base, $headers);
         }
         if ($res['code'] !== 200 || !is_array($res['body'])) {
             throw new \RuntimeException('GitHub API HTTP ' . $res['code']);
@@ -131,6 +132,38 @@ final class UpdateCheck
             $releaseUrl = self::repoReleasesUrl();
         }
         return ['version' => self::parseVersion($tag), 'url' => $releaseUrl];
+    }
+
+    /** @param list<string> $headers @return array{version: string, url: string} */
+    private static function fetchLatestFromGitHubTags(string $base, array $headers): array
+    {
+        $res = HttpClient::request('GET', $base . '/tags?per_page=100', null, $headers);
+        if ($res['code'] !== 200 || !is_array($res['body']) || $res['body'] === []) {
+            throw new \RuntimeException('No GitHub releases published yet.');
+        }
+        $bestVersion = '0.0.0';
+        $bestTag = '';
+        foreach ($res['body'] as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+            $tag = trim((string) ($row['name'] ?? ''));
+            if ($tag === '') {
+                continue;
+            }
+            $version = self::parseVersion($tag);
+            if (version_compare($version, $bestVersion, '>')) {
+                $bestVersion = $version;
+                $bestTag = $tag;
+            }
+        }
+        if ($bestTag === '') {
+            throw new \RuntimeException('No GitHub releases published yet.');
+        }
+        return [
+            'version' => $bestVersion,
+            'url' => 'https://github.com/' . self::REPO . '/releases/tag/' . rawurlencode($bestTag),
+        ];
     }
 
     private static function parseVersion(string $tag): string

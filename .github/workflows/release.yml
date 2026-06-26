@@ -1,0 +1,40 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build distribution zip
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          STAGING="dist/Hetzner-vps-Bot-${TAG}"
+          mkdir -p "$STAGING"
+          rsync -a \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='.env' \
+            --exclude='data/*' \
+            --exclude='public/brand' \
+            --exclude='*.log' \
+            --exclude='.phpunit.cache' \
+            . "$STAGING/"
+          mkdir -p "$STAGING/data"
+          cp data/.htaccess "$STAGING/data/.htaccess" 2>/dev/null || true
+          touch "$STAGING/data/.gitkeep" 2>/dev/null || true
+          (cd dist && zip -r "Hetzner-vps-Bot-${TAG}.zip" "Hetzner-vps-Bot-${TAG}")
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/Hetzner-vps-Bot-*.zip
+          generate_release_notes: true
