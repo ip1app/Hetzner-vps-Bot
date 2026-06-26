@@ -1,0 +1,10 @@
+RewriteEngine On
+Options -Indexes
+DirectoryIndex index.php
+ErrorDocument 404 /404.php
+# Installer (standalone — avoids physical install/ folder conflict)
+RewriteRule ^install/?$ setup.php [L,QSA]
+RewriteRule ^setup/?$ setup.php [L,QSA]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]

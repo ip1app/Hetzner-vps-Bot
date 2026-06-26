@@ -1,0 +1,15 @@
+DELETE THIS FOLDER AFTER INSTALLATION
+=====================================
+
+For security, remove the entire "install" folder from your server
+once setup is complete at /install
+
+The application will continue to work — installation is locked via
+data/installed.lock
+
+Keep these files:
+  - data/installed.lock
+  - .env
+  - All other application files
+
+Do NOT delete data/installed.lock unless you intend to reinstall.

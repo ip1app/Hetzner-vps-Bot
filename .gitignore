@@ -1,0 +1,7 @@
+.env
+*.log
+.phpunit.cache/
+data/*
+!data/.gitkeep
+!data/.htaccess
+public/brand/

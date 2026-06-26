@@ -1,0 +1,14 @@
+# Project root — route to public/ and block directory listing
+Options -Indexes
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+# /install and /setup → standalone installer in public/
+RewriteRule ^install/?$ public/setup.php [L,QSA]
+RewriteRule ^setup/?$ public/setup.php [L,QSA]
+RewriteRule ^public/ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ public/$1 [L,QSA]
+</IfModule>
