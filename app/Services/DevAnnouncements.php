@@ -32,7 +32,7 @@ final class DevAnnouncements
             $url = 'https://raw.githubusercontent.com/' . self::REPO . '/main/announcements.json';
             $headers = [
                 'Accept: application/json',
-                'User-Agent: Hetzner-vps-Bot/' . Installed::VERSION,
+                'User-Agent: Hetzner-vps-Bot/' . Installed::version(),
             ];
             $res = HttpClient::request('GET', $url, null, $headers);
             if ($res['code'] !== 200 || !is_array($res['body'])) {
@@ -92,7 +92,7 @@ final class DevAnnouncements
     public static function active(string $placement): array
     {
         $state = self::fetch(false);
-        $current = Installed::VERSION;
+        $current = Installed::version();
         $out = [];
         foreach ($state['items'] as $item) {
             if (!self::matchesPlacement($item, $placement)) {

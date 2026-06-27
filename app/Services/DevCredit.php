@@ -37,7 +37,7 @@ final class DevCredit
     public static function adminFooterHtml(string $locale): string
     {
         $e = Html::esc(...);
-        $ver = Installed::VERSION;
+        $ver = Installed::version();
         return '<div class="sidebar-foot login-foot">'
             . '<div class="sidebar-ver sidebar-foot-txt">' . $e(I18n::t('admin.footer.version', $locale, ['v' => $ver])) . '</div>'
             . '<div class="sidebar-foot-txt">' . $e(I18n::t('admin.footer.credit', $locale, ['author' => self::author()])) . '</div>'

@@ -16,7 +16,7 @@ final class UpdateCheck
     /** @return array{current: string, latest: string, update_available: bool, release_url: string, checked_at: string, error: string, release_name: string, release_body: string, published_at: string} */
     public static function check(bool $force = false): array
     {
-        $current = Installed::VERSION;
+        $current = Installed::version();
         if (!IntegrityGuard::updatesAllowed()) {
             return self::emptyState($current, IntegrityGuard::updatesBlockedFlag());
         }
@@ -95,8 +95,8 @@ final class UpdateCheck
             return null;
         }
         return [
-            'current' => (string) ($data['current'] ?? Installed::VERSION),
-            'latest' => (string) ($data['latest'] ?? Installed::VERSION),
+            'current' => (string) ($data['current'] ?? Installed::version()),
+            'latest' => (string) ($data['latest'] ?? Installed::version()),
             'update_available' => !empty($data['update_available']),
             'release_url' => (string) ($data['release_url'] ?? self::repoReleasesUrl()),
             'checked_at' => (string) ($data['checked_at'] ?? ''),
@@ -129,7 +129,7 @@ final class UpdateCheck
     {
         $headers = [
             'Accept: application/vnd.github+json',
-            'User-Agent: Hetzner-vps-Bot/' . Installed::VERSION,
+            'User-Agent: Hetzner-vps-Bot/' . Installed::version(),
         ];
         $base = 'https://api.github.com/repos/' . self::REPO;
         $res = HttpClient::request('GET', $base . '/releases/latest', null, $headers);

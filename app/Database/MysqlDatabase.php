@@ -1249,7 +1249,7 @@ SQL);
                 'driver' => 'mysql',
                 'schema' => self::SCHEMA_VERSION,
                 'exported_at' => gmdate('c'),
-                'app_version' => \App\Services\Installed::VERSION,
+                'app_version' => \App\Services\Installed::version(),
             ],
             'clients' => self::listClients(),
             'products' => self::listProducts(),

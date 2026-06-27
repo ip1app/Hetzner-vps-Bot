@@ -11,11 +11,32 @@ use App\Response;
 
 final class Installed
 {
+    /** Fallback when VERSION file is missing (keep in sync on release). */
     public const VERSION = '1.2.2';
     public const DEFAULT_AUTHOR = 'iP1';
     public const DEFAULT_SITE_URL = 'https://ip1.app';
 
     private static string $lockPath = DATA_DIR . '/installed.lock';
+
+    /** Current script version — reads root VERSION file, falls back to VERSION constant. */
+    public static function version(): string
+    {
+        static $cached = null;
+        if ($cached !== null) {
+            return $cached;
+        }
+        $path = ROOT . '/VERSION';
+        if (is_file($path)) {
+            $raw = file_get_contents($path);
+            $line = is_string($raw) ? trim(strtok($raw, "\r\n")) : '';
+            if ($line !== '' && preg_match('/^v?(\d+\.\d+\.\d+(?:[-+][\w.-]+)?)/i', $line, $m)) {
+                $cached = $m[1];
+                return $cached;
+            }
+        }
+        $cached = self::VERSION;
+        return $cached;
+    }
 
     /** Public site URL for admin footer (WEBHOOK_DOMAIN or default). */
     public static function siteUrl(): string
@@ -43,7 +64,7 @@ final class Installed
         }
         $payload = array_merge([
             'installed_at' => date('c'),
-            'version' => self::VERSION,
+            'version' => self::version(),
             'runtime' => 'php',
         ], $meta);
         if (file_put_contents(self::$lockPath, json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) === false) {
