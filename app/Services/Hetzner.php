@@ -77,7 +77,7 @@ final class Hetzner
         $headers = [
             'Authorization: Bearer ' . $token,
             'Accept: application/json',
-            'User-Agent: Hetzner-vps-Bot/1.2.0',
+            'User-Agent: Hetzner-vps-Bot/' . Installed::VERSION,
         ];
         $body = null;
         if ($method === 'POST' || $method === 'PUT' || $method === 'PATCH') {

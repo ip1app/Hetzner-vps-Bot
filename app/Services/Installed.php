@@ -11,7 +11,7 @@ use App\Response;
 
 final class Installed
 {
-    public const VERSION = '1.2.0';
+    public const VERSION = '1.2.2';
     public const DEFAULT_AUTHOR = 'iP1';
     public const DEFAULT_SITE_URL = 'https://ip1.app';
 
