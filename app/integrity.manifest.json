@@ -2,7 +2,7 @@
     "app/Services/DevCredit.php": "605cba397eab12d09d45e6a74df1898353e1b0d9000d31bc17033d803e0b43e2",
     "app/Services/Installed.php": "ef1b91423aa5c050e1f1b3cf24571338b085c63ba46fb60b55c05fc3e547147c",
     "app/Helpers/WebLayout.php": "707cf7f643bdf35f9c204965ae913673d12b1f355d8fb925c4eed53819b27815",
-    "app/Views/AdminUi.php": "e02a22511a7099e6d6b040989192b1a2f40c02a2a4c4489db38ee6b7785f1ce8",
+    "app/Views/AdminUi.php": "9db1f0aa0e8a113db750023c435d66cf31c7e00c13beac1c4673d8b9f23e5b2e",
     "app/Install/InstallerView.php": "d9fd70e01b7a86a8dbce64c58af815bc8cc67c1e116827e7a91c4b78a37c2138",
     "app/Views/ErrorUi.php": "183d6422a08d11da309c62a16f2f362ed39971afb229190b0dbe00c5ae3636b4"
 }

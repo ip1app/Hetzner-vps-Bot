@@ -1,0 +1,21 @@
+{
+  "items": [
+    {
+      "id": "active-dev-2025",
+      "severity": "info",
+      "placement": "admin_global",
+      "expires": "2026-12-31",
+      "min_version": "1.0.0",
+      "dismissible": true,
+      "title": {
+        "ar": "السكربت في مرحلة تطوير نشط",
+        "en": "Script is under active development"
+      },
+      "body": {
+        "ar": "ننصح بعمل نسخة احتياطية أسبوعياً ومتابعة صفحة الإصدارات على GitHub.",
+        "en": "We recommend weekly backups and checking GitHub releases for updates."
+      },
+      "link": "https://github.com/ip1app/Hetzner-vps-Bot/releases"
+    }
+  ]
+}

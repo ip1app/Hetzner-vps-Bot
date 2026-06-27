@@ -139,6 +139,13 @@ textarea{min-height:90px;resize:vertical}
 .btn-sm{padding:6px 12px;font-size:12px;margin:2px;box-shadow:none}
 .btn.green{background:var(--adm-grad)}.btn.red{background:linear-gradient(135deg,#e74c6f,#c0395a);box-shadow:0 8px 24px rgba(231,76,111,.28)}.btn.gray{background:rgba(255,255,255,.08);border:1px solid var(--adm-border);box-shadow:none;color:var(--adm-soft)}
 .err,.ok,.warn,.danger{padding:12px 14px;border-radius:10px;margin-bottom:14px;font-size:14px}
+.dev-announce-wrap{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.dev-announce-body{flex:1;min-width:0}
+.dev-announce-dismiss{margin:0;padding:0;flex-shrink:0}
+.dev-announce-dismiss-btn{background:transparent;border:none;color:inherit;font-size:22px;line-height:1;cursor:pointer;opacity:.75;padding:0 4px}
+.dev-announce-dismiss-btn:hover{opacity:1}
+.dev-announce-info{background:#122033;border:1px solid #1f4a6e;color:#9fd4ff}
+.release-notes-body{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:13px;line-height:1.55;margin:10px 0 0;padding:12px;background:rgba(0,0,0,.2);border-radius:8px;max-height:240px;overflow:auto}
 .err{background:#3a1620;border:1px solid #7a2a3a;color:#ffb9c6}
 .ok{background:#12301f;border:1px solid #1f5c39;color:#a9f0c6}
 .warn{background:#3a2f12;border:1px solid #6e5a1f;color:#ffd479}
@@ -278,6 +285,7 @@ CSS;
             ['/hetzner', 'admin.nav.hetzner', 'hetzner', '☁️'],
             ['/activity', 'admin.nav.activity', 'activity', '📜'],
             ['/branding', 'admin.nav.branding', 'branding', '🎨'],
+            ['/updates', 'admin.nav.updates', 'updates', '🔄'],
             ['/settings', 'admin.nav.settings', 'settings', '⚙️'],
         ];
         $active = $opts['active'] ?? '';

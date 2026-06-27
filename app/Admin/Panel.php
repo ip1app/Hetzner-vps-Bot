@@ -21,6 +21,7 @@ use App\Services\BrandTheme;
 use App\Services\ClientAccounts;
 use App\Services\Config;
 use App\Services\Csrf;
+use App\Services\DevAnnouncements;
 use App\Services\EnvFile;
 use App\Services\Finance;
 use App\Services\ProviderManager;
@@ -81,7 +82,14 @@ final class Panel
             'csrf' => Csrf::token($req->cookie('q8admin')),
             'header' => '',
         ], $pageOpts);
-        $opts['header'] = ($opts['header'] ?? '') . AdminUi::installSecurityBanner($loc) . IntegrityGuard::adminBannerHtml($loc);
+        $csrf = (string) ($opts['csrf'] ?? '');
+        $updateState = UpdateCheck::check(false);
+        DevAnnouncements::fetch(false);
+        $opts['header'] = ($opts['header'] ?? '')
+            . AdminUi::installSecurityBanner($loc)
+            . IntegrityGuard::adminBannerHtml($loc)
+            . UpdateCheck::bannerHtml($loc, $updateState)
+            . DevAnnouncements::bannersHtml($loc, 'admin_global', $csrf);
         Response::html(AdminUi::page($opts));
     }
 
@@ -591,8 +599,7 @@ final class Panel
                 'url_hetzner' => AdminPath::url('/hetzner'),
             ]) . '</div>';
         }
-        $updateState = UpdateCheck::check(false);
-        $banner .= UpdateCheck::bannerHtml($loc, $updateState);
+        $banner .= DevAnnouncements::bannersHtml($loc, 'admin_dashboard', (string) ($req->cookie('q8admin') ?? ''));
         $lowStock = StockAlert::lowStockPlans();
         StockAlert::checkAndNotify();
         $hasPaypal = PayPal::configured();
@@ -684,6 +691,7 @@ final class Panel
             'hetzner' => self::dispatchHetznerGet($req, $loc, $parts),
             'activity' => self::activityGet($req, $loc),
             'branding' => self::brandingGet($req, $loc),
+            'updates' => self::updatesGet($req, $loc),
             'settings' => self::dispatchSettingsGet($req, $loc, $parts),
             default => NotFound::admin($loc),
         };
@@ -703,6 +711,7 @@ final class Panel
             'telegram' => self::dispatchTelegramPost($req, $loc, $parts),
             'hetzner' => self::dispatchHetznerPost($req, $loc, $parts),
             'branding' => self::dispatchBrandingPost($req, $loc, $parts),
+            'updates' => self::dispatchUpdatesPost($req, $loc, $parts),
             'settings' => self::dispatchSettingsPost($req, $loc, $parts),
             'security' => self::securityPost($req, $loc, $parts),
             default => NotFound::admin($loc),
@@ -3054,6 +3063,67 @@ JS;
         self::redirectOk('/admin/branding', 'settings.saved_lang');
     }
 
+    // ── Updates & developer announcements ─────────────────────────────────────
+
+    private static function updatesGet(Request $req, string $loc): void
+    {
+        $csrf = (string) ($req->cookie('q8admin') ?? '');
+        $body = '<p class="sub">' . self::e(self::t('updates.head', $loc)) . '</p>'
+            . UpdateCheck::settingsBlockHtml($loc, UpdateCheck::check(false), $csrf)
+            . DevAnnouncements::settingsBlockHtml($loc, DevAnnouncements::fetch(false), $csrf);
+        self::render($req, $loc, self::t('updates.title', $loc), $body, 'updates');
+    }
+
+    private static function dispatchUpdatesPost(Request $req, string $loc, array $parts): void
+    {
+        $action = $parts[1] ?? '';
+        match ($action) {
+            'check-update' => self::updatesCheckPost($req, $loc),
+            'check-announcements' => self::updatesCheckAnnouncementsPost($req, $loc),
+            'dismiss-announcement' => self::updatesDismissAnnouncementPost($req, $loc),
+            default => NotFound::admin($loc),
+        };
+    }
+
+    private static function updatesCheckPost(Request $req, string $loc): void
+    {
+        $state = UpdateCheck::check(true);
+        if ($state['error'] !== '') {
+            self::redirectErr('/admin/updates', $loc, 'settings.updates_check_failed', ['msg' => $state['error']]);
+        }
+        if ($state['update_available']) {
+            self::redirectOk('/admin/updates', 'settings.updates_check_found', [
+                'latest' => $state['latest'],
+            ]);
+        }
+        self::redirectOk('/admin/updates', 'settings.updates_check_ok');
+    }
+
+    private static function updatesCheckAnnouncementsPost(Request $req, string $loc): void
+    {
+        $state = DevAnnouncements::fetch(true);
+        if ($state['error'] !== '') {
+            self::redirectErr('/admin/updates', $loc, 'dev_announce.refresh_failed', ['msg' => $state['error']]);
+        }
+        self::redirectOk('/admin/updates', 'dev_announce.refresh_ok');
+    }
+
+    private static function updatesDismissAnnouncementPost(Request $req, string $loc): void
+    {
+        $id = trim((string) ($req->body['id'] ?? ''));
+        if ($id === '') {
+            Response::redirect(AdminPath::to('/updates'));
+        }
+        DevAnnouncements::dismiss($id);
+        $ref = $req->header('Referer');
+        $prefix = AdminPath::prefix();
+        $target = ($ref !== '' && str_contains($ref, $prefix))
+            ? $ref
+            : AdminPath::url('/updates');
+        $sep = str_contains($target, '?') ? '&' : '?';
+        Response::redirect($target . $sep . 'ok=' . rawurlencode(self::t('dev_announce.dismissed', $loc)));
+    }
+
     // ── Settings ──────────────────────────────────────────────────────────────
 
     private static function dispatchSettingsGet(Request $req, string $loc, array $parts): void
@@ -3131,8 +3201,7 @@ JS;
             . '<button class="btn">' . self::e(self::t('settings.import_btn', $loc)) . '</button></form></div>'
             . '<div class="card"><h2>' . self::e(self::t('settings.database', $loc)) . '</h2><p class="sub">'
             . self::e(self::t('settings.database_sub', $loc)) . '</p><p><b>' . self::e(self::t('settings.db_current', $loc)) . ':</b> '
-            . self::e($dbInfo['label']) . '</p>' . $statsLine . '</div>'
-            . UpdateCheck::settingsBlockHtml($loc, UpdateCheck::check(false), (string) ($req->cookie('q8admin') ?? ''));
+            . self::e($dbInfo['label']) . '</p>' . $statsLine . '</div>';
         self::render($req, $loc, self::t('settings.title', $loc), $body, 'settings');
     }
 
@@ -3150,7 +3219,6 @@ JS;
             'admin' => self::settingsAdminPost($req, $loc),
             'path' => self::settingsPathPost($req, $loc),
             'import' => self::settingsImportPost($req, $loc),
-            'check-update' => self::settingsUpdateCheckPost($req, $loc),
             default => NotFound::admin($loc),
         };
     }
@@ -3280,20 +3348,6 @@ JS;
         }
         ActivityLog::log('security', 'admin.act.path_changed', ['path' => AdminPath::prefix()]);
         Response::redirect(AdminPath::url('/login') . '?ok=' . rawurlencode(self::t('settings.admin_path_changed', $loc, ['path' => AdminPath::prefix()])));
-    }
-
-    private static function settingsUpdateCheckPost(Request $req, string $loc): void
-    {
-        $state = UpdateCheck::check(true);
-        if ($state['error'] !== '') {
-            self::redirectErr('/admin/settings', $loc, 'settings.updates_check_failed', ['msg' => $state['error']]);
-        }
-        if ($state['update_available']) {
-            self::redirectOk('/admin/settings', 'settings.updates_check_found', [
-                'latest' => $state['latest'],
-            ]);
-        }
-        self::redirectOk('/admin/settings', 'settings.updates_check_ok');
     }
 
     private static function settingsImportPost(Request $req, string $loc): void
