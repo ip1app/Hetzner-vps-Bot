@@ -19,7 +19,7 @@ foreach ($files as $rel) {
         fwrite(STDERR, "Missing: {$rel}\n");
         exit(1);
     }
-    $manifest[$rel] = hash_file('sha256', $path);
+    $manifest[$rel] = hash('sha256', str_replace(["\r\n", "\r"], "\n", (string) file_get_contents($path)));
 }
 
 $out = $root . '/app/integrity.manifest.json';

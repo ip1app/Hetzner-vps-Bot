@@ -36,8 +36,8 @@ final class IntegrityGuard
                 $tampered[] = $rel;
                 continue;
             }
-            $hash = hash_file('sha256', $path);
-            if (!is_string($hash) || !hash_equals($expected, $hash)) {
+            $hash = self::fileHash($path);
+            if ($hash === '' || !hash_equals($expected, $hash)) {
                 $tampered[] = $rel;
             }
         }
@@ -107,5 +107,15 @@ final class IntegrityGuard
             return;
         }
         throw new \RuntimeException(self::featuresDisabledMessage($locale));
+    }
+
+    /** SHA-256 of file contents with CRLF/CR normalized to LF (consistent on Linux and Windows). */
+    public static function fileHash(string $path): string
+    {
+        $raw = file_get_contents($path);
+        if (!is_string($raw)) {
+            return '';
+        }
+        return hash('sha256', str_replace(["\r\n", "\r"], "\n", $raw));
     }
 }
