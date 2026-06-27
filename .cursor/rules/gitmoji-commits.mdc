@@ -1,0 +1,49 @@
+---
+description: Gitmoji commit message convention for this repository
+alwaysApply: true
+---
+
+# Gitmoji Commits
+
+Use **Gitmoji** for every git commit in this repo. Put **one emoji at the start** of the subject line, then a short English description.
+
+Format: `<emoji> <imperative description>`
+
+## Emoji guide (this project)
+
+| Emoji | Use when |
+|-------|----------|
+| ✨ | New feature (store, bot command, API endpoint, gateway) |
+| 🐛 | Bug fix |
+| 📝 | README or docs only |
+| 📄 | `.env.example`, config, sample files |
+| 🌐 | i18n / translations (`translations.json`, locale) |
+| ♻️ | Refactor without behavior change |
+| ⚡ | Performance improvement |
+| 🔒 | Security (auth, CSRF, JWT, rate limits, integrity) |
+| 👷 | CI/CD, Docker, GitHub Actions, deploy scripts |
+| 🔖 | Release / version bump |
+| ⬆️ | Dependency or package upgrade |
+| 🎨 | UI / styling (AdminUi, StoreUi, themes) |
+| 🗃️ | Database schema or migration |
+| 🔧 | Tooling (`tools/`, scripts) |
+| 🚑 | Critical hotfix |
+| 🗑️ | Remove code or files |
+
+## Examples
+
+```
+✨ Add PayPal subscription renewal
+🐛 Fix Telegram webhook duplicate updates
+🌐 Add Arabic bot command texts
+🔒 Harden admin 2FA rate limiting
+👷 Add GitHub release workflow
+📝 Update README installation steps
+```
+
+## Rules
+
+- One emoji per commit; no emoji at the end
+- Keep subject under ~72 characters
+- Use English for commit subjects
+- Pick the **most specific** emoji; prefer 🐛 over ✨ for fixes

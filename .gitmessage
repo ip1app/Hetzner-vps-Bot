@@ -1,0 +1,21 @@
+# Gitmoji commit — emoji first, then short English description
+#
+# ✨  New feature
+# 🐛  Bug fix
+# 📝  Documentation
+# 📄  Config / .env.example
+# 🌐  i18n / translations
+# ♻️  Refactor
+# ⚡  Performance
+# 🔒  Security
+# 👷  CI/CD / deploy
+# 🔖  Release
+# ⬆️  Upgrade dependencies
+# 🎨  UI / styling
+# 🗃️  Database
+# 🔧  Tooling
+#
+# Examples:
+# ✨ Add Hetzner server renewal flow
+# 🐛 Fix subscription cron timezone
+# 📝 Update README installation steps
