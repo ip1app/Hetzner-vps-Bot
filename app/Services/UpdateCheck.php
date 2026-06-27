@@ -9,7 +9,7 @@ use App\Helpers\I18n;
 /** GitHub release check — cached 24h, manual refresh from admin settings. */
 final class UpdateCheck
 {
-    public const REPO = 'ip1-app/Hetzner-vps-Bot';
+    public const REPO = 'ip1app/Hetzner-vps-Bot';
     public const CACHE_FILE = DATA_DIR . '/update_check.json';
     public const CACHE_TTL = 86400;
 
